@@ -1,19 +1,24 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 
 namespace SpaceShooter
 {
-    public sealed class GameManager : MonoBehaviour
+    public sealed class GameManager : MonoBehaviour, iDataPersistence
     {
         private Player player;
         private Invaders invaders;
         private MysteryShip mysteryShip;
         private Bunker[] bunkers;
+        private List<GameData.PlayerData> leaderBoard;
 
         public GameObject gameOverUI;
         public Text scoreText;
         public Text livesText;
+        public List<Text> leaderBoardTexts;
+        
 
         public string MainGameLevel;
 
@@ -28,6 +33,15 @@ namespace SpaceShooter
             bunkers = FindObjectsOfType<Bunker>();
         }
 
+        public void LoadData(GameData data)
+        {
+            this.leaderBoard = data.leaderBoard;
+        }
+
+        public void SaveData(ref GameData data)
+        {
+            data.leaderBoard = this.leaderBoard;
+        }
         private void Start()
         {
             player.killed += OnPlayerKilled;
@@ -61,7 +75,7 @@ namespace SpaceShooter
             gameOverUI.SetActive(false);
 
             SetScore(0);
-            SetLives(3);
+            SetLives(1);
             NewRound();
         }
 
@@ -88,8 +102,34 @@ namespace SpaceShooter
 
         private void GameOver()
         {
+            if (leaderBoard.Count < 3)
+            {
+                leaderBoard.Add(new GameData.PlayerData("", score));
+            }
+            else
+            {
+                leaderBoard.Reverse();
+                if (score > leaderBoard[0].Score)
+                {
+                    leaderBoard.RemoveAt(0);
+                    leaderBoard.Add(new GameData.PlayerData("", score));
+                }
+            }
+            leaderBoard.Sort(new GameData());
+            leaderBoard.Reverse();
+
+            int i = 0;
+            foreach (GameData.PlayerData np in leaderBoard)
+            {
+                leaderBoardTexts[i].text = (i + 1).ToString() + ". " + np.Score.ToString();
+                i++;
+            }
+
+
+
             gameOverUI.SetActive(true);
             invaders.gameObject.SetActive(false);
+            DataPersistenceManager.instance.SaveGame();
         }
 
         private void SetScore(int score)

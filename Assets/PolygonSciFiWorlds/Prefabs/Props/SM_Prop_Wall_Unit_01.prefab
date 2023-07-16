@@ -290,7 +290,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1987782369215502}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1cc1e7b157b88934999c1ccf75c33307, type: 3}
+  m_Script: {fileID: 11500000, guid: 5df50931777d7d5448130c6594e7e566, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  interactButton: {fileID: 0}
+  colliderUIPanel: {fileID: 0}
